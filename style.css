@@ -1,0 +1,96 @@
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif}
+body{background:#000;background:radial-gradient(ellipse at 50% 88%,#06302f 0%,#031514 42%,#000 100%)}
+.vignette{position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.8) 100%);z-index:100;pointer-events:none}
+
+/* ---------- intro card ---------- */
+.trigger-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.93);z-index:200;opacity:1;transition:opacity .8s cubic-bezier(.25,1,.5,1),visibility .8s;visibility:visible}
+.trigger-overlay.fade-out{opacity:0;visibility:hidden;pointer-events:none}
+.glass-card{position:relative;width:min(85vw,340px);background:rgba(22,10,15,.7);border:1px solid rgba(255,40,100,.2);border-radius:24px;padding:35px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,.6),0 0 40px rgba(255,30,80,.1);transition:transform .6s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
+.trigger-overlay.fade-out .glass-card{transform:scale(.85)}
+.card-glow{position:absolute;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,30,80,.15) 0%,transparent 70%);top:-40px;left:-40px;pointer-events:none}
+.rose-icon{font-size:54px;margin-bottom:12px;animation:pulseIcon 2s ease-in-out infinite}
+@keyframes pulseIcon{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.glass-card .title{color:#fff;font-family:'Playfair Display',serif;font-size:21px;line-height:1.35;font-weight:700;letter-spacing:.5px;margin-bottom:22px;text-shadow:0 0 10px rgba(255,255,255,.1)}
+.loading-bar-container{width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.loading-bar{width:100%;height:100%;background:linear-gradient(to right,#ff2e5e,#ff0044);border-radius:3px;transform:scaleX(0);transform-origin:left}
+.status-text{font-size:12px;color:#b5a2b0;font-family:'Fira Code',monospace;margin-bottom:26px}
+.start-button{position:relative;width:100%;padding:16px;background:linear-gradient(135deg,#ff2e5e 0%,#ff0044 100%);border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:14px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;overflow:hidden;transition:transform .2s,box-shadow .2s,opacity .3s;box-shadow:0 5px 20px rgba(255,0,68,.3)}
+.start-button:disabled{background:rgba(255,255,255,.08);color:rgba(255,255,255,.3);cursor:not-allowed;box-shadow:none;transform:none!important}
+.start-button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,0,68,.5),0 0 15px rgba(255,50,90,.3)}
+.start-button:active{transform:translateY(1px)}
+.btn-shine{position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(to right,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-25deg)}
+.start-button:not(:disabled):hover .btn-shine{animation:shine 1.2s ease-in-out infinite}
+@keyframes shine{100%{left:150%}}
+
+.ambient-light{position:fixed;width:1100px;height:1100px;max-width:150vw;max-height:150vh;border-radius:50%;background:radial-gradient(circle,rgba(45,212,191,.13) 0%,rgba(255,60,110,.04) 40%,transparent 65%);top:62%;left:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;opacity:0;transition:opacity 3s ease}
+.ambient-light.visible{opacity:1}
+
+/* ---------- stage: (0,0) = bottom-centre; everything is positioned from here ---------- */
+.stage{position:fixed;left:50%;bottom:10vh;width:0;height:0;z-index:20;transform:scale(var(--fit,1));transform-origin:50% 100%}
+.layer{position:absolute;left:0;bottom:0;width:0;height:0}
+.stems{position:absolute;left:-500px;bottom:0;width:1000px;height:820px;overflow:visible;pointer-events:none}
+.stem-path{fill:none;stroke-linecap:butt;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset var(--stem-dur,2.6s) cubic-bezier(.22,1,.36,1)}
+.stem-path.base{stroke:#127a74;stroke-width:5.5}
+.stem-path.hi{stroke:rgba(150,255,235,.45);stroke-width:1.5;transform:translateX(-1.4px)}
+.stem-path.grow{stroke-dashoffset:0}
+
+/* leaves (stem leaves + the bushy base) */
+.fol{position:absolute;transform-origin:0 50%;transform:rotate(var(--a,-90deg)) scale(0);opacity:0;
+    background:linear-gradient(160deg,var(--c1,#46e3cc) 0%,var(--c2,#1b8f88) 45%,var(--c3,#093b3e) 100%);
+    border-radius:2px 80% 2px 80%;transition:transform 1.3s cubic-bezier(.34,1.4,.64,1),opacity .7s ease}
+.fol.flip{border-radius:80% 2px 80% 2px}
+.fol::after{content:'';position:absolute;left:8%;top:50%;width:78%;height:1px;background:rgba(200,255,245,.25)}
+.fol.on{transform:rotate(var(--a,-90deg)) scale(1);opacity:var(--o,1)}
+.fol.sw{animation:leafSway var(--sd,6s) ease-in-out var(--sl,0s) infinite alternate}
+@keyframes leafSway{from{transform:rotate(calc(var(--a) - 2deg)) scale(1)}to{transform:rotate(calc(var(--a) + 2.5deg)) scale(1)}}
+
+/* grass */
+.blade{position:absolute;bottom:0;width:var(--bw,8px);height:var(--bh,200px);background:linear-gradient(to top,#0a3a1b,#1fbf5b 65%,#9bf5b6);clip-path:polygon(50% 0,100% 100%,0 100%);transform-origin:50% 100%;transform:rotate(var(--lean,0deg)) scaleY(0);transition:transform 1.8s cubic-bezier(.22,1,.36,1)}
+.blade.on{transform:rotate(var(--lean,0deg)) scaleY(1)}
+.blade.sw{animation:grassSway var(--sd,5s) ease-in-out var(--sl,0s) infinite alternate}
+@keyframes grassSway{from{transform:rotate(calc(var(--lean) - 2.5deg)) scaleY(1)}to{transform:rotate(calc(var(--lean) + 2.5deg)) scaleY(1)}}
+
+/* one flower: sits at the stem tip, tilted to follow the curve */
+.flower{position:absolute;left:var(--x,0px);bottom:var(--len,500px);width:0;height:0;transform:rotateZ(var(--tilt,0deg));transform-origin:0 0}
+.sway{position:absolute;left:0;bottom:0;width:0;height:0;transform-origin:0 0}
+.sway.swaying{animation:sway var(--sway-dur,6s) ease-in-out var(--sway-delay,0s) infinite alternate}
+@keyframes sway{from{transform:rotateZ(-2.2deg)}to{transform:rotateZ(2.2deg)}}
+.halo{position:absolute;width:calc(var(--size) * 440px);height:calc(var(--size) * 440px);left:calc(var(--size) * -220px);bottom:calc(var(--size) * -140px);border-radius:50%;background:radial-gradient(circle,hsl(var(--h) 90% 55% / .30) 0%,hsl(var(--h) 90% 45% / .10) 40%,transparent 66%);opacity:0;transition:opacity 3s ease;pointer-events:none}
+.halo.on{opacity:1}
+.head-holder{position:absolute;left:0;bottom:0;width:0;height:0;transform-style:preserve-3d;transform-origin:0 100%;transform:scale(var(--size,.5)) perspective(1000px) rotateX(-24deg)}
+
+.calyx{position:absolute;bottom:-8px;left:0;width:0;height:0;transform-style:preserve-3d;z-index:1}
+.sepal{position:absolute;bottom:-4px;left:50%;width:14px;height:32px;transform-origin:50% 100%;background:linear-gradient(to top,#0a4a4a 0%,#1b8f88 45%,#5eead4 100%);clip-path:polygon(10% 100%,0% 30%,50% 0%,100% 30%,90% 100%);opacity:0;transform:translateX(-50%) rotateY(var(--sepal-angle,0deg)) rotateX(60deg) scale(.5);transition:transform 1.3s cubic-bezier(.25,1,.5,1) var(--sepal-delay,0s),opacity .5s ease var(--sepal-delay,0s)}
+.calyx.visible .sepal{opacity:.95;transform:translateX(-50%) rotateY(var(--sepal-angle,0deg)) rotateX(var(--sepal-curl,22deg)) scale(1)}
+.rose-head{position:absolute;bottom:-5px;left:0;width:0;height:0;transform-style:preserve-3d;z-index:10}
+
+.petal{position:absolute;bottom:0;left:50%;transform-origin:50% 100%;opacity:.002;border-radius:50% 50% 35% 35%/45% 45% 55% 55%;
+    transform:translateX(-50%) rotateY(var(--angle,0deg)) translateZ(0px) rotateX(90deg) scale(.1);
+    transition:transform var(--bloom-dur,2.4s) ease-in-out var(--delay,0s),opacity .7s ease var(--delay,0s);
+    background:linear-gradient(to bottom,
+        hsl(var(--h) var(--s) calc(var(--t) * var(--lb) * 1%)) 0%,
+        hsl(var(--h) var(--s) calc(var(--t) * var(--lb) * .70%)) 40%,
+        hsl(var(--h) var(--s) calc(var(--t) * var(--lb) * .38%)) 75%,
+        hsl(var(--h) var(--s) calc(var(--t) * var(--lb) * .12%)) 100%)}
+.rose-head.blooming .petal{opacity:1;transform:translateX(-50%) rotateY(var(--angle,0deg)) translateZ(var(--tz,0px)) rotateX(var(--curl,30deg)) scale(var(--scale,1))}
+.petal-bud{--t:12}.petal-core{--t:16}.petal-inner{--t:21}.petal-mid-inner{--t:26}.petal-mid{--t:30}.petal-outer{--t:34}.petal-blush{--t:38}
+
+/* ---------- fireflies, falling petals, end text ---------- */
+#fireflies{position:fixed;inset:0;z-index:30;pointer-events:none}
+.firefly{position:absolute;width:var(--fs,3px);height:var(--fs,3px);border-radius:50%;background:var(--fc,#fde68a);box-shadow:0 0 6px 2px var(--fc,#fde68a);opacity:0;animation:fly var(--fd,9s) ease-in-out var(--fl,0s) infinite alternate}
+@keyframes fly{0%{opacity:0;transform:translate3d(0,0,0)}25%{opacity:.95}60%{opacity:.25}100%{opacity:.9;transform:translate3d(var(--fx,30px),var(--fy,-40px),0)}}
+.falling-petal{position:fixed;width:var(--fp-w,13px);height:var(--fp-h,17px);background:radial-gradient(ellipse at 40% 30%,var(--fp-c1,#9a001d),var(--fp-c2,#3d0008) 75%);border-radius:50% 50% 45% 55%/60% 60% 40% 40%;opacity:0;pointer-events:none;z-index:50;animation:fallSway var(--f-dur,7s) linear forwards;animation-delay:var(--f-delay,0s)}
+@keyframes fallSway{
+0%{opacity:0;transform:translate3d(0,0,0) rotate(0deg) scale(1)}
+8%{opacity:.85}
+25%{transform:translate3d(var(--s1,35px),20vh,0) rotate(70deg) scale(.95)}
+50%{transform:translate3d(var(--s2,-25px),48vh,0) rotate(160deg) scale(.88)}
+75%{transform:translate3d(var(--s3,35px),75vh,0) rotate(270deg) scale(.78);opacity:.55}
+100%{opacity:0;transform:translate3d(var(--s4,10px),108vh,0) rotate(390deg) scale(.55)}}
+.end-text{position:fixed;bottom:2.5%;left:50%;transform:translateX(-50%);width:92vw;text-align:center;opacity:0;transition:opacity 2s ease;z-index:60}
+.end-text.visible{opacity:1}
+.tagline{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(15px,4.6vw,26px);color:rgba(255,205,222,.97);letter-spacing:2px;text-transform:lowercase;text-shadow:0 0 22px rgba(255,80,130,.5),0 0 4px rgba(0,0,0,.8);margin-bottom:2px}
+.rose-emoji{font-size:22px;display:block;animation:floatEmoji 3s ease-in-out infinite}
+@keyframes floatEmoji{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.sway.swaying,.fol.sw,.blade.sw,.firefly{animation:none}}
